@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Kitchen4All</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
+</head>
+<body>
+
+<div class="jumbotron text-center">
+	<h2>Kitchen4All</h2>
+</div>
+	
+<div class="container">
+	<div class="row" id="about" style="display:block; padding:15px">
+		<p class="bot-0 text">Welcome to the Android Version of my recipe site. I am a house wife who is fond of cooking and I dedicate this site to my Grand Aunt i.e. my Grand Father's elder sister Smt. Pichamma who made me to love cooking and serving. She will cook very delicious food without using Onion or Garlic. We all love her preparations. Actually I started cooking when I was studying 8th std. I learnt to prepare some readymade powders like 'parappuppodi' etc and some 'thuvaiyals'.</p><p class="bot-0 text">After my marriage due to the nature of job of my life partner we shifted to different states of India and I learnt new varieties .Now I know lot of varieties and I was motivated by my son who has made his own web page , to create a site with my recipes and experiences in cooking . My husband also encouraged me. That is why I have decided to create this web site. I will be very happy if the visitors find some benefit out of my effort.</p><p class="bot-0 text">Now I would like to share my experiences and ideas in maintaining a happy home. During my past 27 years of experience I have practiced certain cooking ideas of my Pichamma Aunt, my Grand Mother (Ms Vedavalli Ramaswami) and my Amma (Ms Vasantha Sundararajan). Apart from that I have developed my own innovative ideas in SIMPLIFYING cooking.</p><p class="bot-0 text">Certain ideas of mine will be highly helpful for busy Office goers who are willing to prepare tasty food for their family members. I hope this site will cover lot of topics to suit the requirements and needs of variety of people.</p><p class="bot-0 text">Lastly I would like to thank my husband and son who encouraged me to create this site and the ideas of presentation are our combined effort.</p><p class="bot-0 text">Sumathi Sundar<br>Feb 2003<br><br>Visit my <a href="https://youtube.com/c/IdealFamily" target=_blank>YouTube channel</a> for more recipes</p>
+	</div>
+	<div class="row" id="navBar" style="display:none"></div>
+	<div class="row" id="catListDiv">
+		<div class="col-sm-4">
+			<h3>Search</h3>
+			<div class="form-group">
+				<input type="text" class="form-control" placeholder="What are you looking for?" id="searchText" onKeyUp="searchRecipes()">
+			</div>
+			<ul class="list-group" id="recipeSearch">
+			</ul>
+		</div>
+		<div class="col-sm-4">
+			<h3>English</h3>
+			<ul class="list-group" id="catEng">
+			</ul>
+		</div>
+		<div class="col-sm-4">
+			<h3>தமிழ்</h3>
+			<ul class="list-group" id="catTam">
+			</ul>
+		</div>
+	</div>
+	<div class="row" id="recListDiv" style="display:none">
+		<div class="col-sm-2"></div>
+		<div class="col-sm-8">
+			<h3 id="catName"></h3>
+			<ul class="list-group" id="recList">
+			</ul>
+		</div>
+	</div>
+	<div class="row" id="recDetails" style="display:none">
+		<div class="col-sm-2"></div>
+		<div class="col-sm-8">
+			<h3 id="recName"></h3>
+			<h4 id="Ingredients">Ingredients</h4>
+			<ul class="list-group" id="IngredientsList">
+			</ul>
+			<h4 id="Method">Method</h4>
+			<ul class="list-group" id="MethodList">
+			</ul>
+			<h4 id="Notes">Notes</h4>
+			<ul class="list-group" id="NotesList">
+			</ul>
+			<h4 id="Images">Images</h4>
+			<ul class="list-group" id="ImagesList">
+			</ul>
+		</div>
+	</div>
+</div>
+</body>
+<script src = "data.json"></script>
+<script>
+//Add Category List
+data.Categories.forEach(function(x) {
+	var isTamil = false;
+	var tmpId = "";
+	var tmpCatName = "";
+	if(x.CategoryName.substr(0, 2) == "a "){
+		tmpId = "catTam";
+		tmpCatName = x.CategoryName.substr(2);
+	}
+	else {
+		tmpId = "catEng";
+		tmpCatName = x.CategoryName;
+	}
+	
+	//Get # of recipes
+	var newArray = data.Recipes.filter(function (r) {
+	  return r.CategoryId == x.Id;
+	});
+	
+	//Add LI
+	$("#" + tmpId).append('<li class="list-group-item"><a href="javascript:showRecipesInCategory(' + x.Id + ')">' + tmpCatName + '</a><span class="badge">' + newArray.length + '</span></li>');
+});
+
+function showRecipesInCategory(catId) {
+	window.scrollTo({ top: 400, behavior: 'smooth' });
+	//Get Category
+	var chosenCategory = data.Categories.filter(function (c) {
+	  return c.Id == catId;
+	});
+	var tmpCatName = "";
+	if(chosenCategory[0].CategoryName.substr(0, 2) == "a "){
+		tmpCatName = chosenCategory[0].CategoryName.substr(2);
+	}
+	else {
+		tmpCatName = chosenCategory[0].CategoryName;
+	}
+	
+	//Get # of recipes
+	var recipesList = data.Recipes.filter(function (r) {
+	  return r.CategoryId == catId;
+	});
+	
+	//Set header
+	$("#catName").text(tmpCatName);
+	
+	//Show recipes
+	$("#recList").empty();
+	recipesList.forEach(function(x) {
+		//Check Images
+		var imgCount = 0;
+		var imgSpan = "";
+		if(x.Images != null) {
+			imgCount = x.Images.split("http").length - 1;
+		}
+		if(imgCount > 0)
+			imgSpan = '<span class="badge">' + imgCount + '</span>';
+		
+		//Add LI
+		$("#recList").append('<li class="list-group-item"><a href="javascript:showRecipe(' + x.Id + ')">' + x.Title + '</a>' + imgSpan + '</li>');
+	});
+	
+	//Update Nav Bar to go back to All Categories
+	$("#navBar").empty();
+	$("#navBar").append('<div class="row"><div class="col-sm-2"></div><div class="col-sm-8"><a class="btn btn-primary" href="javascript:showCats()">View Categories</a></div></div>');
+	
+	$("#catListDiv").fadeOut();
+	$("#recDetails").fadeOut();
+	$("#navBar").fadeIn();
+	$("#recListDiv").fadeIn();
+}
+
+function splitIt(str) {
+	var separator = "";
+	if (str.includes("\r\n"))
+		separator = "\r\n";
+	else if(str.includes("*"))
+		separator = "*";
+	else if (str.includes(","))
+		separator = ",";
+	
+	if(separator.length == 0)
+		return [str];
+	else
+		return str.split(separator);
+}
+
+function showRecipe(recId, fromSearch=false) {
+	window.scrollTo({ top: 400, behavior: 'smooth' });
+	//Get Recipe
+	var recipesList = data.Recipes.filter(function (r) {
+	  return r.Id == recId;
+	});
+	
+	var r = recipesList[0];
+	
+	//Get Category
+	var chosenCategory = data.Categories.filter(function (c) {
+	  return c.Id == recipesList[0].CategoryId;
+	});
+	var tmpCatName = "";
+	if(chosenCategory[0].CategoryName.substr(0, 2) == "a "){
+		tmpCatName = chosenCategory[0].CategoryName.substr(2);
+	}
+	else {
+		tmpCatName = chosenCategory[0].CategoryName;
+	}
+	
+	//Set header
+	$("#recName").text(r.Title);
+	if(r.Ingredients != null && r.Ingredients.length > 0) {
+		var ings = splitIt(r.Ingredients);
+		$("#IngredientsList").empty();
+		ings.forEach(function(x){
+			if(x.trim().length > 0)
+			$("#IngredientsList").append('<li class="list-group-item">' + x.trim() + '</li>');
+		});
+		$("#Ingredients").fadeIn();
+		$("#IngredientsList").fadeIn();
+	}
+	else {
+		$("#Ingredients").fadeOut();
+		$("#IngredientsList").fadeOut();
+	}
+	
+	//Method
+	if(r.Method != null && r.Method.length > 0) {
+		var mets = splitIt(r.Method);
+		$("#MethodList").empty();
+		mets.forEach(function(x){
+			if(x.trim().length > 0)
+			$("#MethodList").append('<li class="list-group-item">' + x.trim() + '</li>');
+		});
+		$("#Method").fadeIn();
+		$("#MethodList").fadeIn();
+	}
+	else {
+		$("#Method").fadeOut();
+		$("#MethodList").fadeOut();
+	}
+	
+	//Notes
+	if(r.Notes != null && r.Notes.length > 0) {
+		var notes = splitIt(r.Notes);
+		$("#NotesList").empty();
+		notes.forEach(function(x){
+			if(x.trim().length > 0)
+			$("#NotesList").append('<li class="list-group-item">' + x.trim() + '</li>');
+		});
+		$("#Notes").fadeIn();
+		$("#NotesList").fadeIn();
+	}
+	else {
+		$("#Notes").fadeOut();
+		$("#NotesList").fadeOut();
+	}
+	
+	//Images
+	if(r.Images != null && r.Images.length > 0) {
+		var imgs = splitIt(r.Images);
+		$("#ImagesList").empty();
+		imgs.forEach(function(x){
+			if(x.trim().length > 0)
+			$("#ImagesList").append('<li class="list-group-item"><img class="img-fluid img-thumbnail img-rounded" src="' + x.trim() + '"/></li>');
+		});
+		$("#Images").fadeIn();
+		$("#ImagesList").fadeIn();
+	}
+	else {
+		$("#Images").fadeOut();
+		$("#ImagesList").fadeOut();
+	}
+	
+	//Update Nav Bar to go back to the category
+	$("#catListDiv").fadeOut();
+	$("#recListDiv").fadeOut();
+	$("#navBar").fadeIn();
+	$("#recDetails").fadeIn();
+	$("#navBar").empty();
+	if(!fromSearch)
+		$("#navBar").append('<div class="row"><div class="col-sm-2"></div><div class="col-sm-8"><a class="btn btn-primary" href="javascript:showRecipesInCategory(' + recipesList[0].CategoryId + ')">Go back to ' + tmpCatName + '</a><br><a class="btn btn-primary"  href="javascript:showCats()">View all Categories</a></div></div>');
+	else
+		$("#navBar").append('<div class="row"><div class="col-sm-2"></div><div class="col-sm-8"><a class="btn btn-primary"  href="javascript:showCats()">Go back to Search Results</a><br><a class="btn btn-primary" href="javascript:showRecipesInCategory(' + recipesList[0].CategoryId + ')">See other recipes in ' + tmpCatName + '</a></div></div>');
+}
+
+function searchRecipes() {
+	const fuseOptions = {
+		// isCaseSensitive: false,
+		includeScore: true,
+		shouldSort: true,
+		// includeMatches: false,
+		// findAllMatches: false,
+		minMatchCharLength: 2,
+		// location: 0,
+		threshold: 0.3,
+		// distance: 100,
+		// useExtendedSearch: false,
+		// ignoreLocation: false,
+		// ignoreFieldNorm: false,
+		// fieldNormWeight: 1,
+		keys: [
+			"Title",
+			"Ingredients",
+			"Method"
+		]
+	};
+
+	const fuse = new Fuse(data.Recipes, fuseOptions);
+
+	// Change the pattern
+	const searchPattern = $("#searchText").val();
+
+	var result = fuse.search(searchPattern);
+	//console.log(result);
+	
+	if(result.length == 0) {
+	}
+	else {
+		//Show search result
+		$("#recipeSearch").empty();
+		result.forEach(function(x) {
+			//Check Images
+			var imgCount = 0;
+			var imgSpan = "";
+			if(x.item.Images != null) {
+				imgCount = x.item.Images.split("http").length - 1;
+			}
+			if(imgCount > 0)
+				imgSpan = '<span class="badge">' + imgCount + '</span>';
+				
+			//Add LI
+			$("#recipeSearch").append('<li class="list-group-item"><a href="javascript:showRecipe(' + x.item.Id + ', true)">' + x.item.Title + '</a>' + imgSpan + '</li>');
+		});
+	}
+	
+}
+
+function showCats() {
+	$("#catListDiv").fadeIn();
+	$("#navBar").fadeOut();
+	$("#recListDiv").fadeOut();
+	$("#recDetails").fadeOut();
+}
+</script>
+</html>
