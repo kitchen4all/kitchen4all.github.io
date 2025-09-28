@@ -200,6 +200,7 @@
   }
 
   function showRecipe(recId, fromSearch = false) {
+	$("#about").hide()
     window.scrollTo({ top: 0, behavior: 'smooth' });
     let r = data.Recipes.find(recipe => recipe.Id == recId);
     let category = data.Categories.find(c => c.Id == r.CategoryId);
