@@ -1701,9 +1701,14 @@
               observer.unobserve(el);
             }
           });
-        }, { threshold: 0.15 });
+        }, { threshold: 0.05 });
         observer.observe(el);
       });
+      // Fallback: make all hidden anim-fade-up elements visible after 3s
+      // (handles mobile browsers where IntersectionObserver may not fire)
+      setTimeout(function() {
+        $('.anim-fade-up:not(.visible)').addClass('visible');
+      }, 3000);
     }
 
     // ============================================================
