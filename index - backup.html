@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Kitchen4All - Recipes & Stories</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(120deg, #f8fafc 60%, #eae6f6 100%);
+      margin-bottom: 100px;
+    }
+    .jumbotron {
+      background: linear-gradient(90deg, #ffdde1, #ee9ca7 80%);
+      color: #47243b;
+      border-radius: 1.5rem;
+      margin-top: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 16px rgba(180, 80, 180, 0.07);
+      padding: 3rem 1rem;
+    }
+    .jumbotron h2 {
+      font-family: 'Lobster', cursive;
+      font-size: 3rem;
+      letter-spacing: 1px;
+    }
+    .section-title {
+      margin-top: 2rem;
+      font-family: 'Lobster', cursive;
+      letter-spacing: 1px;
+    }
+    .recipe-card {
+      transition: transform 0.2s;
+    }
+    .recipe-card:hover {
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 2px 16px rgba(127, 59, 177, 0.13);
+    }
+    .list-group-item > a { color: #97502b; text-decoration: none; transition: color 0.2s; }
+    .list-group-item > a:hover { color: #d97c29; }
+    .list-group-item.active, .list-group-item.active:focus {
+      background: #d6a4a4;
+      border-color: #c88b8d;
+      color: #643c3c;
+    }
+    .badge {
+      background: #b691cb;
+      font-size: 1rem;
+    }
+    .img-thumbnail {
+      max-width: 240px;
+      margin-bottom: 1rem;
+    }
+    .btn-primary {
+      background: #9e64b3;
+      border: none;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-top: 1rem;
+    }
+    .form-control:focus {
+      border-color: #a882d5;
+      box-shadow: 0 0 0 .2rem rgba(158,100,179,.10);
+    }
+    .recipe-details h3, .recipe-details h4 {
+      font-weight: 700;
+    }
+    @media (max-width: 767px) {
+      .jumbotron { padding: 2rem 0.7rem; }
+      .img-thumbnail { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="jumbotron text-center shadow-lg">
+    <h2>Kitchen4All</h2>
+    <p style="font-size:1.3rem; font-family:'Nunito',sans-serif;">
+      Indian vegetarian recipes, home tips, and stories inspired by generations.
+    </p>
+  </div>
+  
+  <div class="row" id="about" style="display:block;">
+    <div class="col-12">
+      <div class="alert alert-light shadow-sm" style="font-size:1.06rem">
+        <p class="bot-0 text">Welcome to the Android Version of my recipe site. I am a house wife who is fond of cooking and I dedicate this site to my Grand Aunt i.e. my Grand Father's elder sister Smt. Pichamma who made me to love cooking and serving. She will cook very delicious food without using Onion or Garlic. We all love her preparations. Actually I started cooking when I was studying 8th std. I learnt to prepare some readymade powders like 'parappuppodi' etc and some 'thuvaiyals'.</p><p class="bot-0 text">After my marriage due to the nature of job of my life partner we shifted to different states of India and I learnt new varieties .Now I know lot of varieties and I was motivated by my son who has made his own web page , to create a site with my recipes and experiences in cooking . My husband also encouraged me. That is why I have decided to create this web site. I will be very happy if the visitors find some benefit out of my effort.</p><p class="bot-0 text">Now I would like to share my experiences and ideas in maintaining a happy home. During my past 27 years of experience I have practiced certain cooking ideas of my Pichamma Aunt, my Grand Mother (Ms Vedavalli Ramaswami) and my Amma (Ms Vasantha Sundararajan). Apart from that I have developed my own innovative ideas in SIMPLIFYING cooking.</p><p class="bot-0 text">Certain ideas of mine will be highly helpful for busy Office goers who are willing to prepare tasty food for their family members. I hope this site will cover lot of topics to suit the requirements and needs of variety of people.</p><p class="bot-0 text">Lastly I would like to thank my husband and son who encouraged me to create this site and the ideas of presentation are our combined effort.</p><p class="bot-0 text">Sumathi Sundar<br>Feb 2003<br><br>
+        <p>Visit my <a href="https://youtube.com/c/IdealFamily" class="link-primary" target="_blank" rel="noopener">YouTube channel</a> for more recipes.</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row gy-4" id="catListDiv">
+    <div class="col-lg-4 col-md-6 col-12">
+      <h4 class="section-title">Search</h4>
+      <input type="text" class="form-control p-3 mb-3" placeholder="What are you looking for?" id="searchText" onkeyup="searchRecipes()">
+      <ul class="list-group" id="recipeSearch"></ul>
+    </div>
+    <div class="col-lg-4 col-md-6 col-12">
+      <h4 class="section-title">English</h4>
+      <ul class="list-group" id="catEng"></ul>
+    </div>
+    <div class="col-lg-4 col-12">
+      <h4 class="section-title">தமிழ்</h4>
+      <ul class="list-group" id="catTam"></ul>
+    </div>
+  </div>
+  
+  <div class="row" id="navBar" style="display:none"></div>
+  
+  <div class="row" id="recListDiv" style="display:none">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <h3 id="catName"></h3>
+      <ul class="list-group" id="recList"></ul>
+    </div>
+  </div>
+  
+  <div class="row" id="recDetails" style="display:none">
+    <div class="col-md-2"></div>
+    <div class="col-md-8 recipe-details">
+      <h3 id="recName"></h3>
+      <h4 id="Ingredients">Ingredients</h4>
+      <ul class="list-group mb-3" id="IngredientsList"></ul>
+      <h4 id="Method">Method</h4>
+      <ul class="list-group mb-3" id="MethodList"></ul>
+      <h4 id="Notes">Notes</h4>
+      <ul class="list-group mb-3" id="NotesList"></ul>
+      <h4 id="Images">Images</h4>
+      <ul class="list-group mb-3" id="ImagesList"></ul>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
+<script src="data.json"></script>
+<script>
+  //--- Load Categories on Ready ---
+  $(function() {
+    if (typeof data !== "undefined") {
+      addCategories();
+    } else {
+      setTimeout(addCategories, 700);
+    }
+  });
+
+  function addCategories() {
+    data.Categories.forEach(function(x) {
+      let tmpId = x.CategoryName.substr(0, 2) === "a " ? "catTam" : "catEng";
+      let tmpCatName = x.CategoryName.substr(0, 2) === "a " ? x.CategoryName.substr(2) : x.CategoryName;
+      let count = data.Recipes.filter(r => r.CategoryId == x.Id).length;
+      $("#" + tmpId).append(
+        `<li class="list-group-item d-flex justify-content-between align-items-center bg-white recipe-card">
+          <a href="javascript:showRecipesInCategory('${x.Id}')">${tmpCatName}</a>
+          <span class="badge">${count}</span>
+        </li>`
+      );
+    });
+  }
+
+  function showRecipesInCategory(catId) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    let category = data.Categories.find(c => c.Id == catId);
+    let tmpCatName = category.CategoryName.substr(0, 2) === "a " ?
+      category.CategoryName.substr(2) : category.CategoryName;
+    let recipesList = data.Recipes.filter(r => r.CategoryId == catId);
+    $("#catName").text(tmpCatName).hide().fadeIn();
+    $("#recList").empty();
+    recipesList.forEach(function(x) {
+      let imgCount = x.Images ? x.Images.split("http").length - 1 : 0;
+      let imgSpan = imgCount > 0 ? `<span class="badge">${imgCount}</span>` : '';
+      $("#recList").append(
+        `<li class="list-group-item bg-white recipe-card">
+          <a href="javascript:showRecipe('${x.Id}')">${x.Title}</a> ${imgSpan}
+        </li>`
+      );
+    });
+	$("#about").hide()
+    $("#navBar").html(`
+      <div class="row"><div class="col-sm-2"></div>
+      <div class="col-sm-8 text-center">
+        <a class="btn btn-primary" href="javascript:showCats()">View Categories</a>
+      </div></div>`).fadeIn();
+    $("#catListDiv, #recDetails").fadeOut();
+    $("#recListDiv").fadeIn();
+  }
+
+  function splitIt(str) {
+    let separator = str.includes("\r\n") ? "\r\n"
+      : str.includes("*") ? "*"
+      : str.includes(",") ? ","
+      : "";
+    return separator ? str.split(separator) : [str];
+  }
+
+  function showRecipe(recId, fromSearch = false) {
+	$("#about").hide()
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    let r = data.Recipes.find(recipe => recipe.Id == recId);
+    let category = data.Categories.find(c => c.Id == r.CategoryId);
+    let tmpCatName = category.CategoryName.substr(0, 2) === "a " ?
+      category.CategoryName.substr(2) : category.CategoryName;
+    $("#recName").text(r.Title);
+
+    // INGREDIENTS
+    if (r.Ingredients && r.Ingredients.length > 0) {
+      let items = splitIt(r.Ingredients);
+      $("#IngredientsList").empty();
+      items.forEach(x => { if (x.trim()) $("#IngredientsList").append(`<li class="list-group-item">${x.trim()}</li>`); });
+      $("#Ingredients, #IngredientsList").fadeIn();
+    } else {
+      $("#Ingredients, #IngredientsList").hide();
+    }
+
+    // METHOD
+    if (r.Method && r.Method.length > 0) {
+      let methods = splitIt(r.Method);
+      $("#MethodList").empty();
+      methods.forEach(x => { if (x.trim()) $("#MethodList").append(`<li class="list-group-item">${x.trim()}</li>`); });
+      $("#Method, #MethodList").fadeIn();
+    } else {
+      $("#Method, #MethodList").hide();
+    }
+
+    // NOTES
+    if (r.Notes && r.Notes.length > 0) {
+      let notes = splitIt(r.Notes);
+      $("#NotesList").empty();
+      notes.forEach(x => { if (x.trim()) $("#NotesList").append(`<li class="list-group-item">${x.trim()}</li>`); });
+      $("#Notes, #NotesList").fadeIn();
+    } else {
+      $("#Notes, #NotesList").hide();
+    }
+
+    // IMAGES
+	if (r.Images && r.Images.length > 0) {
+	  let imgs = splitIt(r.Images);
+	  $("#ImagesList").empty();
+	  imgs.forEach(x => {
+		let imgUrl = x.trim();
+		if (imgUrl)
+		  $("#ImagesList").append(
+			`<li class="list-group-item">
+			  <a href="${imgUrl}" class="glightbox" data-gallery="recipe-images">
+				<img class="img-thumbnail rounded mx-auto d-block" src="${imgUrl}" />
+			  </a>
+			</li>`);
+	  });
+	  $("#Images, #ImagesList").fadeIn();
+	  setTimeout(() => GLightbox({selector: '.glightbox'}), 300); // initialize after rendering
+	} else {
+	  $("#Images, #ImagesList").hide();
+	}
+
+
+    // NAV
+    let navHtml = fromSearch ?
+      `<div class="row"><div class="col-sm-2"></div><div class="col-sm-8 text-center">
+        <a class="btn btn-primary" href="javascript:showCats()">Go back to Search Results</a><br>
+        <a class="btn btn-primary" href="javascript:showRecipesInCategory('${r.CategoryId}')">See other recipes in ${tmpCatName}</a>
+      </div></div>`
+      :
+      `<div class="row"><div class="col-sm-2"></div><div class="col-sm-8 text-center">
+        <a class="btn btn-primary" href="javascript:showRecipesInCategory('${r.CategoryId}')">Go back to ${tmpCatName}</a><br>
+        <a class="btn btn-primary" href="javascript:showCats()">View all Categories</a>
+      </div></div>`;
+    $("#navBar").html(navHtml).fadeIn();
+    $("#catListDiv, #recListDiv").fadeOut();
+    $("#recDetails").fadeIn();
+  }
+
+  function searchRecipes() {
+    const fuseOptions = {
+      includeScore: true,
+      shouldSort: true,
+      minMatchCharLength: 2,
+      threshold: 0.35,
+      keys: ["Title", "Ingredients", "Method"]
+    };
+    const fuse = new Fuse(data.Recipes, fuseOptions);
+    let searchPattern = $("#searchText").val();
+    let result = fuse.search(searchPattern);
+    $("#recipeSearch").empty();
+    if (result.length > 0 && searchPattern) {
+      result.forEach(x => {
+        let imgCount = x.item.Images ? x.item.Images.split("http").length - 1 : 0;
+        let imgSpan = imgCount ? `<span class="badge">${imgCount}</span>` : '';
+        $("#recipeSearch").append(
+          `<li class="list-group-item bg-white recipe-card">
+            <a href="javascript:showRecipe('${x.item.Id}', true)">${x.item.Title}</a> ${imgSpan}
+          </li>`);
+      });
+    }
+  }
+
+  function showCats() {
+	$("#about").show()
+    $("#catListDiv").fadeIn();
+    $("#navBar").fadeOut();
+    $("#recListDiv").fadeOut();
+    $("#recDetails").fadeOut();
+  }
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+</body>
+</html>
