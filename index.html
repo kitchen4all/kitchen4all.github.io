@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Kitchen4All — Recipes & Stories from Sumathi</title>
+  <title>Kitchen4All — Recipes from Sumathi Sundar</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Indian vegetarian recipes, home tips, and stories inspired by generations. By Sumathi Sundar.">
@@ -1025,6 +1025,7 @@
     }
 
     /* ===== PRINT ===== */
+    .print-links { display: none; }
     @media print {
       .hero, #about, .section-divider, #categories, #catListDiv,
       #recListDiv, #navBar, .navbar-kitchen, .site-footer, .back-to-top {
@@ -1038,15 +1039,47 @@
       .recipe-detail-card {
         box-shadow: none !important;
         border: 1px solid #ddd !important;
+      }
+      .detail-section {
         page-break-inside: avoid;
       }
       .recipe-detail-footer { display: none !important; }
       body { background: #fff !important; }
       .container { max-width: 100% !important; padding: 0 0.5in !important; }
+      .detail-section h4 {
+        page-break-after: avoid;
+      }
       .ingredients-list li.checked { text-decoration: none; opacity: 1; }
       .ingredients-list li.checked::before,
       .ingredients-list li.checked::after { display: none !important; }
       .hero-spices { display: none !important; }
+
+      .print-links {
+        display: block !important;
+        margin-top: 2rem;
+        text-align: center;
+      }
+      .print-links-divider {
+        border: none;
+        border-top: 2px solid #ccc;
+        margin: 0 0 1rem;
+      }
+      .print-links-content {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+      }
+      .print-links-content span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+      .print-links-content a {
+        color: #C15B3D !important;
+        text-decoration: underline !important;
+      }
     }
   </style>
 </head>
@@ -1109,7 +1142,7 @@
         <div class="col-lg-10 col-xl-9">
           <div class="about-card anim-fade-up" id="aboutCard">
             <div class="about-ribbon">
-              <i class="bi bi-heart-fill"></i> A Letter from Sumathi
+              <i class="bi bi-heart-fill"></i> A Letter from Sumathi Sundar
             </div>
             <div class="about-intro">
               "Cooking is not just about food — it's about love, memories, and the stories we pass down through generations."
@@ -1122,8 +1155,8 @@
             <div class="about-signature">
               <i class="bi bi-suit-heart-fill" style="color:var(--primary);font-size:0.9rem;"></i> Sumathi Sundar<br>
               <small>February 2003</small>
-            </div>
           </div>
+
         </div>
       </div>
     </div>
@@ -1231,6 +1264,15 @@
             </div>
 
           </div>
+
+          <div class="print-links">
+            <div class="print-links-divider"></div>
+            <div class="print-links-content">
+              <span><i class="bi bi-globe"></i> <a href="https://kitchen4all.github.io/">kitchen4all.github.io</a></span>
+              <span><i class="bi bi-youtube"></i> <a href="https://youtube.com/c/IdealFamily">youtube.com/c/IdealFamily</a></span>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -1322,15 +1364,43 @@
     }
 
     // ============================================================
+    // ROUTING (hash-based URL)
+    // ============================================================
+    var _ignoreHash = false;
+
+    function handleRoute() {
+      var hash = location.hash.slice(1) || "home";
+      if (hash === "home") {
+        showCats();
+        return;
+      }
+      var parts = hash.split("/");
+      if (parts[0] === "category" && parts[1]) {
+        showRecipesInCategory(parts[1]);
+      } else if (parts[0] === "recipe" && parts[1]) {
+        showRecipe(parts[1]);
+      } else {
+        showCats();
+      }
+    }
+
+    $(window).on('hashchange', function() {
+      if (_ignoreHash) { _ignoreHash = false; return; }
+      handleRoute();
+    });
+
+    // ============================================================
     // SHOW RECIPES IN CATEGORY
     // ============================================================
     function showRecipesInCategory(catId) {
+      _ignoreHash = true; history.replaceState(null, "", "#category/" + catId);
       var category = data.Categories.find(function(c) { return c.Id == catId; });
       var tmpCatName = category.CategoryName.substr(0, 2) === "a " ?
         category.CategoryName.substr(2) : category.CategoryName;
       var recipesList = data.Recipes.filter(function(r) { return r.CategoryId == catId; });
 
       $("#catName").text(tmpCatName);
+      document.title = "Kitchen4All - " + tmpCatName;
       $("#recList").empty();
 
       recipesList.forEach(function(x) {
@@ -1379,6 +1449,7 @@
     // SHOW RECIPE DETAIL
     // ============================================================
     function showRecipe(recId, fromSearch) {
+      _ignoreHash = true; history.replaceState(null, "", "#recipe/" + recId);
       var r = data.Recipes.find(function(recipe) { return recipe.Id == recId; });
       if (!r) return;
       var category = data.Categories.find(function(c) { return c.Id == r.CategoryId; });
@@ -1395,6 +1466,7 @@
       );
 
       $("#recName").text(r.Title);
+      document.title = "Kitchen4All - " + r.Title;
 
       // Meta
       var metaHtml = '<span><i class="bi bi-folder"></i> ' + tmpCatName + '</span>';
@@ -1580,6 +1652,8 @@
     // SHOW CATEGORIES (HOME)
     // ============================================================
     function showCats() {
+      _ignoreHash = true; history.replaceState(null, "", "#home");
+      document.title = "Kitchen4All — Recipes & Stories";
       $("#about").show();
       switchView($("#catListDiv, #about"), $("#recListDiv, #recDetails, #navBar"), function() {
         scrollToPane($("#categories"));
@@ -1656,13 +1730,15 @@
     // ============================================================
     $(function() {
       initFuse();
-      // Prefill search placeholder message
       $("#recipeSearch").html(
         '<div class="search-empty">' +
           '<i class="bi bi-search"></i>' +
           '<p>Type at least 2 characters to search recipes</p>' +
         '</div>'
       );
+      if (location.hash && location.hash.length > 1) {
+        handleRoute();
+      }
     });
   </script>
 
