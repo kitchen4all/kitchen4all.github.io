@@ -1127,7 +1127,7 @@
         <a href="javascript:showCats()" class="btn btn-spice me-2 mb-2">
           <i class="bi bi-book me-1"></i> Explore Recipes
         </a>
-        <a href="javascript:showCats()" class="btn btn-outline-spice mb-2" onclick="event.preventDefault();showCats();setTimeout(function(){document.getElementById('about').scrollIntoView({behavior:'smooth'})},500)">
+        <a href="javascript:showCats('#about')" class="btn btn-outline-spice mb-2">
           <i class="bi bi-person me-1"></i> Our Story
         </a>
       </div>
@@ -1651,12 +1651,12 @@
     // ============================================================
     // SHOW CATEGORIES (HOME)
     // ============================================================
-    function showCats() {
+    function showCats(scrollToId) {
       _ignoreHash = true; history.replaceState(null, "", "#home");
       document.title = "Kitchen4All — Recipes & Stories";
       $("#about").show();
       switchView($("#catListDiv, #about"), $("#recListDiv, #recDetails, #navBar"), function() {
-        scrollToPane($("#categories"));
+        scrollToPane(scrollToId ? $(scrollToId) : $("#categories"));
       });
       setTimeout(initScrollAnim, 400);
     }
